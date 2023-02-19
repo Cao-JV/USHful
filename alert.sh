@@ -5,12 +5,40 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-DIR_HOME="/home/me/"
-DIR_DEVELOPMENT="${DIR_HOME}dev/"
-DIR_LOGS="${DIR_HOME}.local/log/"
-DIR_SCRIPTS="${DIR_HOME}scripts/"
+# Send notifications to GNOME Desktop & EMail
 
-EMAIL_SYSTEM_FROM="admin@domain.co.nz"
-EMAIL_ALERT_LIST="user1@domain.au;user2@home.com"
+doSendAlert() {
+    # $1 = Title
+    # $2 = Message
+    # $3 = (optional)Notification Level
+    LEVEL=$3
+    if [ ${#LEVEL} -le 0 ]
+    then
+        LEVEL="normal"
+    fi
 
-SHOULD_EMAIL_AV=0
+    notify-send  -u ${LEVEL} "${1}" "${2}"
+}
+
+doSendEmail() {
+    # $1 = Title
+    # $2 = Message
+    # $3 = Importance
+    # $4 = Sender
+    # $5 = RecipientList
+    MSG_BODY=`mktemp /tmp/av-message.XXX`
+    echo "To: ${5}" >> ${MSG_BODY}
+    echo "From: ${4}" >> ${MSG_BODY}
+    echo "Subject: ${1}" >> ${MSG_BODY}
+ 
+    if [ "$3" = "critical" ] 
+    then
+        echo "Importance: High" >> ${MSG_BODY}
+        echo "X-Priority: 1" >> ${MSG_BODY}
+        1 = "[ALERT] ${1}"
+    fi
+
+    echo "${2}" >> ${MSG_BODY}
+
+    sendmail -t < ${MSG_BODY}
+}
