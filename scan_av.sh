@@ -66,6 +66,7 @@ doScan() {
 
 if [ ${IS_ADMIN_SCAN} -eq 1 ]
 then
+    freshclam
     DIR_TO_SCAN=`/`
 fi
 
