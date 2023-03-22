@@ -22,4 +22,5 @@ FILE_NAME="${DIR_SSH_KEYS}${1}"
 ssh-keygen -t ed25519 -C "${KEY_EMAIL}" -f ${FILE_NAME}
 
 eval "$(ssh-agent -s)"
+
 ssh-add ${FILE_NAME}
